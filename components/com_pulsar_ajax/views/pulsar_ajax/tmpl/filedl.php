@@ -536,7 +536,10 @@ function Zip($source, $destination)
 		else if (is_file($file) === true)
 		{
 
-		$str1 = str_replace($source . '/', '', '/'.$file);
+		// Edit from philippe.sabatygmail.com on 2017-11-20 - Start
+        // $str1 = str_replace($source . '/', '', '/'.$file);
+        $str1 = basename($file);
+        // Edit from philippe.sabatygmail.com on 2017-11-20 - End
 		$zip->addFromString($str1, file_get_contents($file));
 
 		}
