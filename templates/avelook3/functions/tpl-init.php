@@ -105,7 +105,23 @@ if($menu)
 	if (!$session->get( 'geoip'))
 	{
 		$ip = $_SERVER['REMOTE_ADDR'];
-		$details = json_decode(file_get_contents("http://ip-api.com/json/{$ip}"));
+        // EDIT from philippe.sabaty@gmail.com on 2017-11-22 - Start
+		//$details = json_decode(file_get_contents("http://ip-api.com/json/{$ip}"));
+        $providerUrl = "http://freegeoip.net/json/{$ip}";
+		$timeout = 10; // using timeout for smoother behaviour when quotas are reached
+        $providerData = file_get_contents(
+            $providerUrl, false,
+            stream_context_create( array('http'=>array('timeout' => $timeout )) )
+        );
+        $details = $providerData?json_decode($providerData):null;
+        // copying some values expected from previous provider, for compatibility
+        if($details){
+            if(isset($details->latitude)){$details->lat = $details->latitude;}
+            if(isset($details->longitude)){$details->lon = $details->longitude;}
+            if(isset($details->country_name)){$details->country = $details->country_name;}
+
+        }
+        // EDIT from philippe.sabaty@gmail.com on 2017-11-22 - End
 		$session->set( 'geoip',$details );
 	}
 	
